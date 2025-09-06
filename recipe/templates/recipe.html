@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ recipe.name }}{% endblock %}
+
+{% block content %}
+
+    {% if back_url.endswith("/") %}
+    <a href="{{ back_url }}" id="back-button">
+        <i class="bi bi-arrow-left"></i> Back to home
+    </a>
+    {% else %}
+    <a href="{{ back_url }}" id="back-button">
+        <i class="bi bi-arrow-left"></i> Back to browse
+    </a>
+    {% endif %}
+
+    <div id="recipe-title">
+        <h1>{{ recipe.name }}</h1>
+        <p>By {{ recipe.author.name }}</p>
+    </div>
+
+
+    <div class="main-recipe-image">
+        <img src="{{ recipe.images[0] }}" alt="Image of {{ recipe.name }}">
+    </div>
+
+    {% if recipe.images|length > 1 %}
+    <div class="recipe-thumbnails">
+        {% for img in recipe.images[1:5] %}
+            <img src="{{ img }}" alt="Recipe Thumbnail" class="recipe-thumbnail">
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    <div class="recipe-preparation-instructions">
+
+        <h3>Description</h3>
+        <p> {{ recipe.description }}</p>
+
+        <h3>Ingredients</h3>
+        <ol>
+            {% for quantity, ingredient in ingredient_pairs %}
+                <li>
+                    {% if quantity == "NA" %}
+                        An unspecified amount of {{ ingredient }}
+                    {% else %}
+                        {{ quantity }} {{ ingredient }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ol>
+
+
+        {% if recipe.recipe_yield != "NA" %}
+            <p> Recipe will make {{ recipe.recipe_yield }}</p>
+        {% endif %}
+
+
+        {% if recipe.cook_time != 0 %}
+            <p>Cooking time: 
+                {% set hours = recipe.cook_time // 60 %}
+                {% set minutes = recipe.cook_time % 60 %}
+
+                {% if hours > 0 %}
+                    {{ hours }} hour{{ 's' if hours > 1 }}{% if minutes > 0 %} {{ minutes }} & min{{ 's' if minutes > 1 }}{% endif %}
+                {% else %}
+                    {{ minutes }} min{{ 's' if minutes > 1 }}
+                {% endif %}
+            </p>
+        {% else %}
+            <p>Cooking time unspecified</p>
+        {% endif %}
+
+
+        <h3>How to make {{ recipe.name }}</h3>
+        <ol>
+            {% for instruction in recipe.instructions %}
+                <li>{{ instruction }}</li>
+            {% endfor %}
+        </ol>
+
+        <h3>Nutrition information</h3>
+        <table class="table table-sm table-bordered w-auto">
+            <tbody>
+                <tr><th>Calories</th><td>{{ recipe.nutrition.calories }}kcal</td></tr>
+                <tr><th>Fat</th><td>{{ recipe.nutrition.fat }}g</td></tr>
+                <tr><th>Saturated Fat</th><td>{{ recipe.nutrition.saturated_fat }}g</td></tr>
+                <tr><th>Cholesterol</th><td>{{ recipe.nutrition.cholesterol }}mg</td></tr>
+                <tr><th>Sodium</th><td>{{ recipe.nutrition.sodium }}mg</td></tr>
+                <tr><th>Carbohydrates</th><td>{{ recipe.nutrition.carbohydrates }}g</td></tr>
+                <tr><th>Fiber</th><td>{{ recipe.nutrition.fiber }}g</td></tr>
+                <tr><th>Sugar</th><td>{{ recipe.nutrition.sugar }}g</td></tr>
+                <tr><th>Protein</th><td>{{ recipe.nutrition.protein }}g</td></tr>
+            </tbody>
+        </table>
+
+        {% if recipe.servings != "NA" %}
+            <p>For {{ recipe.servings }} servings.</p>
+        {% endif %}
+
+    </div>
+
+{% endblock %}
